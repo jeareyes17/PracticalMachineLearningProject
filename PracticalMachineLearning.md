@@ -9,6 +9,7 @@ output: html_document
 ## Background of the Study
 
 Using devices such as Jawbone Up, Nike FuelBand, and Fitbit it is now possible to collect a large amount of data about personal activity relatively inexpensively. A group of enthusiasts took measurements about themselves regularly to improve their health, to find patterns in their behavior. Most people quantify how much of a particular activity they do, but rarely quantify how well they do it. In this project, the goal is to use data from accelerometers on the belt, forearm, arm, and dumbell of 6 participants. The subjects were asked to perform barbell lifts correctly and incorrectly in 5 different ways.
+
 Source: http://web.archive.org/web/20161224072740/http:/groupware.les.inf.puc-rio.br/har
 
 ## Instruction
