@@ -6,6 +6,10 @@ output: html_document
 ---
 
 
+## Background of the Study
+
+Using devices such as Jawbone Up, Nike FuelBand, and Fitbit it is now possible to collect a large amount of data about personal activity relatively inexpensively. A group of enthusiasts took measurements about themselves regularly to improve their health, to find patterns in their behavior. Most people quantify how much of a particular activity they do, but rarely quantify how well they do it. In this project, the goal is to use data from accelerometers on the belt, forearm, arm, and dumbell of 6 participants. The subjects were asked to perform barbell lifts correctly and incorrectly in 5 different ways.
+Source: http://web.archive.org/web/20161224072740/http:/groupware.les.inf.puc-rio.br/har
 
 ## Instruction
 
@@ -18,17 +22,11 @@ In this course project it is expected that the following activities are performe
 - prediction of test values
 
 ## Preparation of Required Packages
+The prerequisite packages are loaded to perform machine learning.
+
 
 ```r
 install.packages("caret",repos = "http://cran.us.r-project.org")
-```
-
-```
-## Installing package into 'C:/Users/asus/Documents/R/win-library/3.5'
-## (as 'lib' is unspecified)
-```
-
-```r
 library(caret)
 ```
 
@@ -121,7 +119,7 @@ The csv files are retrieved based on the given url. Columns that contain 90% mos
 ```
 
 ## Data Partitioning
-Through the caret package, the training data is partitioned into training and validation set.
+Through the caret package, the training data is partitioned into sixty percent training and forty percent validation set. The test data will be used for verification and prediction of new values
 
 ```r
  set.seed(1234)
@@ -130,6 +128,7 @@ Through the caret package, the training data is partitioned into training and va
  validation <- trainData[-inTrain,]
 ```
 ## Decision Tree Modeling
+The dependent variable identified is classe. rpart is used as the method to be applied on the train data
 
 ```r
 modFit <- train(classe~.,method="rpart",data=train)
@@ -155,11 +154,14 @@ print(modFit$finalModel)
 
 ## Decision Tree Plot
 
+Modeling through Decision Tree plot is shown below.
 
 
 ![plot of chunk unnamed-chunk-4](figure/unnamed-chunk-4-1.png)
 
 ## Prediction of data using Decision Tree
+
+The generated model will be used to predict the values from the validation data for verification. The confusion matrix illustrates whether there are misclassification from the data. The fitted model is also used to predict values from test data
 
 ```r
  prediction <- predict(modFit,newdata=validation)
@@ -219,7 +221,11 @@ The Decision Tree Model has 49.28% accuracy. Another model can be tested whether
 
 ## Prediction of data using Random Forest
 
+Another machine learning model is Random Forest. Let's compare the performance of the Random Forest versus the Decision Tree. The data is partitioned into 60% training and 40% validation data as well. The model generated is used to predict values of validation and test data.
+
+
 ```r
+# Set seed for data to be reproducible
 set.seed(100);
  trainSet <- sample(nrow(trainData),0.6*nrow(trainData),replace = FALSE)
  train <- trainData[trainSet,]
@@ -297,6 +303,8 @@ model2
 ## Levels: A B C D E
 ```
 
+## Importance Plot
+The graph illustrates the factors that are considered as important in the model.
 ![plot of chunk unnamed-chunk-7](figure/unnamed-chunk-7-1.png)
 
-The random forest yields higher accuracy percentage of 99.3% as compared to the Decision Tree. The predicted values for the test data is generated.
+The random forest yields higher accuracy percentage of 99.3% as compared to the Decision Tree. The predicted values for the test data are generated.
