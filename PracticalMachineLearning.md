@@ -7,7 +7,7 @@ output: html_document
 
 
 
-## Iatruction
+## Instruction
 
 The goal of the project is to predict the manner how the accelerometer experiment is executed.
 In this course project it is expected that the following activities are performed:
