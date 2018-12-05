@@ -1,0 +1,104 @@
+---
+title: "Practical Machine Learning Course Project"
+author: "Janina Reyes"
+date: "December 5, 2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Iatruction
+
+The goal of the project is to predict the manner how the accelerometer experiment is executed.
+In this course project it is expected that the following activities are performed:
+- model building
+- cross validation
+- sample error expectation
+- evaluation of models
+- prediction of test values
+
+## Preparation of Required Packages
+```{r}
+install.packages("caret",repos = "http://cran.us.r-project.org")
+library(caret)
+install.packages("randomForest",repos = "http://cran.us.r-project.org")
+library(randomForest)
+install.packages("rattle",repos = "http://cran.us.r-project.org")
+library(rattle)
+library(lattice)
+library(ggplot2)
+```
+## Retrieval and cleaning of data
+The csv files are retrieved based on the given url. Columns that contain 90% mostly NA or empty string are removed. IDs are also removed since it is unnecessary for model building. 
+```{r}
+ trainData <- read.csv("https://d396qusza40orc.cloudfront.net/predmachlearn/pml-training.csv", header=TRUE) 
+ testData <- read.csv("https://d396qusza40orc.cloudfront.net/predmachlearn/pml-testing.csv", header=TRUE)
+ almostEmpty <- sapply(trainData, function(x) mean(is.na(x) | x == "")) > 0.90
+ trainData <-trainData[,almostEmpty==FALSE]
+ almostEmpty2 <- sapply(testData, function(x) mean(is.na(x)| x == "")) > 0.90
+ testData <-testData[,almostEmpty2==FALSE]
+ trainData<-trainData[,-(1:7)]
+ testData<-testData[,-(1:7)]
+```
+
+## Data Partitioning
+Through the caret package, the training data is partitioned into training and validation set.
+```{r trainData}
+ set.seed(1234)
+ intrain<- createDataPartition(y= trainData$classe,p=0.6, list = FALSE)
+ train <- trainData[intrain,]
+ validation <- trainData[-inTrain,]
+ 
+```
+## Decision Tree Modeling
+```{r}
+modFit <- train(classe~.,method="rpart",data=train)
+print(modFit$finalModel)
+```
+
+## Decision Tree Plot
+
+
+
+```{r echo=FALSE}
+ fancyRpartPlot(modFit$finalModel)
+```
+
+## Prediction of data using Decision Tree
+```{r}
+ prediction <- predict(modFit,newdata=validation)
+ table(prediction)
+ print(confusionMatrix(prediction, validation$classe), digits=4)
+ ## use prediction model to test data
+prediction <- predict(modFit,newdata=testData)
+```
+
+The Decision Tree Model has 49.28% accuracy. Another model can be tested whether it would yield higher accuracy.
+
+## Prediction of data using Random Forest
+```{r}
+set.seed(100);
+ trainSet <- sample(nrow(trainData),0.6*nrow(trainData),replace = FALSE)
+ train <- trainData[trainSet,]
+ valid <- trainData[-trainSet,]
+model2 <- randomForest(classe ~ ., data = train, ntree = 500, mtry = 6, importance = TRUE)
+model2
+ # Predicting on train set
+ predTrain <- predict(model2, train, type = "class")
+ table(predTrain, train$classe) 
+ predValid <- predict(model2, valid, type = "class")
+ # Checking classification accuracy
+ mean(predValid == valid$classe) 
+ table(predValid,valid$classe)
+ prediction <- predict(model2,newdata=testData)
+ prediction
+
+```
+
+```{r, echo = FALSE}
+ varImpPlot(model2)
+```
+
+The random forest yields higher accuracy percentage of 99.3% as compared to the Decision Tree. The predicted values for the test data is generated.
